@@ -95,14 +95,14 @@ public class Scheduler {
     private static void createPatient(String[] tokens) {
         // TODO: Part 1
         if (tokens.length != 3) {
-            System.out.println("Failed to create user.");
+            System.out.println("Create patient failed");
             return;
         }
         String username = tokens[1];
         String password = tokens[2];
 
         if (usernameExistsPatient(username)) {
-            System.out.println("Username taken, try again!");
+            System.out.println("Username taken, try again");
             return;
         }
         byte[] salt = Util.generateSalt();
@@ -114,8 +114,7 @@ public class Scheduler {
             patient.saveToDB();
             System.out.println("Created user " + username);
         } catch (SQLException e) {
-            System.out.println("Failed to create user.");
-            e.printStackTrace();
+            System.out.println("Create patient failed");
         }
     }
 
@@ -190,12 +189,12 @@ public class Scheduler {
     private static void loginPatient(String[] tokens) {
         // TODO: Part 1
         if (currentCaregiver != null || currentPatient != null) {
-            System.out.println("User already logged in.");
+            System.out.println("User already logged in, try again");
             return;
         }
 
         if (tokens.length != 3) {
-            System.out.println("Login failed.");
+            System.out.println("Login patient failed");
             return;
         }
         String username = tokens[1];
@@ -205,14 +204,13 @@ public class Scheduler {
         try {
             patient = new Patient.PatientGetter(username, password).get();
         } catch (SQLException e) {
-            System.out.println("Login failed.");
-            e.printStackTrace();
+            System.out.println("Login patient failed");
         }
         // check if the login was successful
         if (patient == null) {
-            System.out.println("Login failed.");
+            System.out.println("Login patient failed");
         } else {
-            System.out.println("Logged in as: " + username);
+            System.out.println("Logged in as " + username);
             currentPatient = patient;
         }
     }
