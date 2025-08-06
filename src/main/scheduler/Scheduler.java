@@ -248,10 +248,56 @@ public class Scheduler {
 
     private static void searchCaregiverSchedule(String[] tokens) {
         // TODO: Part 2
+        if (currentCaregiver == null && currentPatient == null) {
+            System.out.println("Need to login first");
+            return;
+        }
+        if (tokens.length != 2) {
+            System.out.println("Search caregiver failed");
+            return;
+        }
+
+        String date = tokens[1];
+        try {
+            Date d = Date.valueOf(date);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please enter a valid date!");
+            return;
+        }
+
+        ConnectionManager cm = new ConnectionManager();
+        Connection con = cm.createConnection();
+        String selectCaregiver = "SELECT Username FROM Availabilities WHERE Time = ? ORDER BY Username";
+        try {
+            PreparedStatement statement = con.prepareStatement(selectCaregiver);
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+        } catch (SQLException e) {
+            System.out.println("Error occurred when searching caregiver schedule");
+            e.printStackTrace();
+        } finally {
+            cm.closeConnection();
+        }
     }
 
     private static void reserve(String[] tokens) {
         // TODO: Part 2
+        if (currentCaregiver == null && currentPatient == null) {
+            System.out.println("Need to login first");
+            return;
+        }
+        if (currentCaregiver != null) {
+            System.out.println("Please login as patient");
+            return;
+        }
+        if (tokens.length != 3) {
+            System.out.println("Please try again");
+            return;
+        }
+
+        String date = tokens[1];
+        String vaccine = tokens[2];
+
     }
 
     private static void uploadAvailability(String[] tokens) {
@@ -328,9 +374,34 @@ public class Scheduler {
 
     private static void showAppointments(String[] tokens) {
         // TODO: Part 2
+        if (currentCaregiver == null && currentPatient == null) {
+            System.out.println("Please login first");
+            return;
+        }
+        boolean isPatient = (currentPatient != null);
+        String username = isPatient ? currentPatient.getUsername() : currentCaregiver.getUsername();
+
+        if (isPatient) {
+            String selectPatient = "SELECT a.Appointment_id, v.Name, a.Date, c.Name FROM Caregivers c, Appointments a, Vaccines v WHERE Username = ?";
+        }
+        else {
+            String selectCaregiver = "SELECT a.Appointment_id, v.Name, a.Date, p.Name FROM Patients p, Appointments a, Vaccines v WHERE Username = ?";
+        }
+
+        ConnectionManager cm = new ConnectionManager();
+        Connection con = cm.createConnection();
+
     }
 
     private static void logout(String[] tokens) {
         // TODO: Part 2
+        if (currentCaregiver == null && currentPatient == null) {
+            System.out.println("Please login first");
+            return;
+        }
+        currentCaregiver = null;
+        currentPatient = null;
+
+        System.out.println("Successfully logged out");
     }
 }
